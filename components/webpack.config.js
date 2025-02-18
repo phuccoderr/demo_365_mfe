@@ -1,7 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-
-const { ModuleFederationPlugin } = require("webpack").container;
+const webpack = require("webpack");
+const { ModuleFederationPlugin } = webpack.container;
 
 module.exports = {
   mode: "development",
@@ -10,15 +10,25 @@ module.exports = {
     path: path.resolve(__dirname, ".dist"),
     filename: "bundle.js",
   },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+  },
   devServer: {
-    static: {
-      directory: path.resolve(__dirname, ".dist"),
-    },
     open: true,
     port: 3001,
     historyApiFallback: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+    static: {
+      directory: path.resolve(__dirname, ".dist"),
+    },
   },
   plugins: [
+    new HtmlWebpackPlugin({
+      template: "./src/index.html",
+      filename: "index.html",
+    }),
     new ModuleFederationPlugin({
       name: "commonComponents",
       filename: "remoteEntry.js",
